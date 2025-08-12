@@ -18,11 +18,11 @@ def courses_id(course_id):
 def courses_name(course_name):
     return f'This course name is: {course_name}'
 
-@app.route('/courses')
-def couses_detail_query():
-    c_name=request.arg.get('name')
-    c_date=request.arg.get('date')
-    return f'The course name is {c_name} created on {c_date}'
+@app.route('/courses_details')
+def couses_details():
+    c_name=request.args.get('name')
+    c_date=request.args.get('date')
+    return f'The course name is {c_name} created on: {c_date}'
 
 @app.route('/about')
 def about():
