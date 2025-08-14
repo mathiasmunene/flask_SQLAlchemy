@@ -1,6 +1,15 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
+from models import db, Course, Student, Enrollment
 
 app = Flask (__name__)
+
+#setup DB resources
+app.config["SQLACHEMY_DATABASE_URI"] = ""
+app.config["SQLACHEMY_TRACKMODIFICATIONS"] = False
+db.init_app(app) #..intitialize sqlalchemy with your flask app
+
+with app.app_context():
+    db.create_all() #..create all non-existent tables
 
 @app.route('/')
 def index():
