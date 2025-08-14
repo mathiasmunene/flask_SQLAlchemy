@@ -31,20 +31,20 @@ class Course(db.Model):
     def dict_short(self):
         return{
              "id":self.id,
-             "itle":self.name,
+             "title":self.name,
         }
 
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
-    course = db.relationship("Courses", back_populates="enrollments")
-    student = db.relationship("Students", back_populates="enrollments")
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
+    course = db.relationship("Course", back_populates="enrollments")
+    student = db.relationship("Student", back_populates="enrollments")
 
     def to_dict(self):
         return{
             "id": self.id,
             "course": self.course.dict_short(),
-            "student": self.student.to.dict()
+            "student": self.student.to_dict()
         }
 

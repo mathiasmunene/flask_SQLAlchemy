@@ -1,15 +1,53 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, jsonify
 from models import db, Course, Student, Enrollment
 
 app = Flask (__name__)
 
 #setup DB resources
-app.config["SQLACHEMY_DATABASE_URI"] = ""
-app.config["SQLACHEMY_TRACKMODIFICATIONS"] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///schools.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app) #..intitialize sqlalchemy with your flask app
 
 with app.app_context():
     db.create_all() #..create all non-existent tables
+
+#CREATE student
+@app.route("/students", methods=["POST"])
+def create_student():
+    data = request.get_json()
+    name = data["full_name"]
+    age = data["age"]
+    student = Student(full_name=name, age=age)
+    db.session.add(student)
+    db.session.commit()
+    return jsonify(student.to_dict()), 201
+
+# Read all students
+@app.route("/students", methods=["GET"])
+def get_students():
+    students = Student.query.all()
+    students_data = [student.to_dict() for student in students]
+    return jsonify(students_data), 200
+
+# Update Method - update student by id
+
+@app.route("/students/<int:id>", methods=["PUT", "PATCH"])
+def edit_students(id):
+    student = Student.query.get_or_404(id)
+    data = request.get_json()
+    student.full_name = data.get("full_name", student.full_name)
+    student.age = data.get("age", student.age)
+    db.session.commit()
+    return jsonify(student.to_dict()), 200
+
+#Delete Method - delete student by id
+@app.route("/students/<int:id>", methods=["DELETE"])
+def delete_student(id):
+    student = Student.query.get_or_404(id)
+    db.session.delete(student)
+    db.session.commit()
+    return jsonify({"message": f"Deleted student with id {id} successfully"}), 200
+
 
 @app.route('/')
 def index():
